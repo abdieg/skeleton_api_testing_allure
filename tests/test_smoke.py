@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.main
 @pytest.mark.smoke
 @pytest.mark.regression
 def test_health_check_return_200():
