@@ -14,6 +14,10 @@
 - Add content roots to PYTHONPATH (checked)
 - Add source roots to PYTHONPATH (checked)
 
+## Pytest.ini
+- Configure **addopts** flag as needed
+- Three environments are set: dev, qa, prod. Default is qa in case no flag is set
+
 ## Execute
 
 1. Enable VENV
