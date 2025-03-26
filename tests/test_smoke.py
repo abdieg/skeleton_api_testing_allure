@@ -1,6 +1,8 @@
+import pytest
 from common.api_call import api_call
 
 
+@pytest.mark.smoke
 def test_health_check_return_200():
     """
     Smoke test to validate API is reachable and responding with 200 OK.
