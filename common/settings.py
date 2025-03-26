@@ -1,5 +1,5 @@
 # API endpoint
-endpoint = "http://127.0.0.1:11000/person"
+endpoint = "http://127.0.0.1:11000"
 
 # API security token
 security_token_qa = {
