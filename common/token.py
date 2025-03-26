@@ -1,9 +1,9 @@
 import requests
 from requests.auth import HTTPBasicAuth
-import settings
+import common.settings as settings
 import logging
 
-# Set up logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

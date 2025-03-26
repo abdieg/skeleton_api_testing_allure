@@ -1,7 +1,7 @@
 import pytest
-from common import token
+from common.token import get_token
 
 
-# @pytest.fixture(scope="session")
-# def token():
-#     return token.get_token()
+@pytest.fixture(scope="session")
+def auth_token():
+    return get_token()

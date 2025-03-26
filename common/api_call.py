@@ -1,5 +1,5 @@
 import requests
-import settings
+from common import settings
 import logging
 
 
