@@ -1,7 +1,6 @@
 import pytest
 import logging
 from common.api_call import api_call
-from common import settings
 
 
 logging.basicConfig(level=logging.INFO)
