@@ -3,6 +3,13 @@ import logging
 from common.api_call import api_call
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# SCHEMA SUITE
+# To validate that API structure goes accoingly with swagger and acceptance criteria.
+# It validates the existence of each key and parameters in case certain keys are linked to them.
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

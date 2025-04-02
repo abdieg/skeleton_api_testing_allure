@@ -1,8 +1,14 @@
 from datetime import datetime
-
 import pytest
 import logging
 from common.api_call import api_call
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# DATA RANGES SUITE
+# To validate that key ranges are within the expected results.
+# Remember that MIN, MIN-1, MAX and MAX+1 could also be validated although sometimes a mockup is needed.
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 logging.basicConfig(level=logging.INFO)

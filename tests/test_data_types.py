@@ -3,6 +3,13 @@ import logging
 from common.api_call import api_call
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# DATA TYPES SUITE
+# To validate that each key returns its corresponding data type value. Per example, that a Salary field returns numeric
+# values or a certain key returns boolean.
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

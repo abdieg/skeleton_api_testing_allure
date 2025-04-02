@@ -3,6 +3,13 @@ import logging
 from common.api_call import api_call
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# SMOKE SUITE
+# To validate that API returns the right response code for optional vs required parameters.
+# It can also contain a mix of wrong parameters to validate right response.
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

@@ -4,6 +4,12 @@ from common.api_call import api_call
 from common import settings
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# SMOKE SUITE
+# To validate that API is up and running.
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
