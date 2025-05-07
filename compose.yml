@@ -1,12 +1,12 @@
 services:
-  fastapi_app:
+  test_runner:
     build: .
     env_file:
       - .env
     networks:
       - skeleton_api
-    restart: unless-stopped
+    restart: "no"  # One execution only
 
 networks:
   skeleton_api:
-    driver: bridge
+    external: true

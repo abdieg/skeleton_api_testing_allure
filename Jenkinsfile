@@ -61,9 +61,18 @@ pipeline {
 
 		stage('Build and deploy docker image') {
 			steps {
-				echo 'Building the Docker image...'
-				sh './d.compose.sh'
-				echo 'Deployment completed successfully.'
+				echo 'Running the testing container with pytest...'
+				script {
+					def exitCode = sh(script: './d.compose.sh', returnStatus: true)
+					if (exitCode != 0)
+					{
+						error("Tests failed with exit code ${exitCode}")
+					}
+					else
+					{
+						echo "Tests passed successfully."
+					}
+				}
 			}
 		}
 
