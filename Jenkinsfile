@@ -58,14 +58,14 @@ pipeline {
 			}
 		}
 
-// 		stage('Build and deploy docker image') {
-// 			steps {
-// 				echo 'Building the Docker image...'
-// 				sh './d.compose.sh'
-// 				echo 'Deployment completed successfully.'
-// 			}
-// 		}
-//
+		stage('Build and deploy docker image') {
+			steps {
+				echo 'Building the Docker image...'
+				sh './d.compose.sh'
+				echo 'Deployment completed successfully.'
+			}
+		}
+
 // 		stage('Deploy completed - Set flag') {
 //             steps {
 //                 script {
