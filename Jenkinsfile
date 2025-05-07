@@ -1,63 +1,63 @@
-// pipeline {
-// 	agent any
-//
-// 	stages {
-//
-// 		stage('Clone repository') {
-// 			steps {
-// 				echo 'Cloning the repository...'
-// 				git url: 'https://github.com/abdieg/skeleton_api_app.git', branch: 'main'
-// 				echo 'Repository cloned successfully.'
-// 			}
-// 		}
-//
-// 		stage('Check for changes') {
-// 			steps {
-// 				script {
-// 					def changes = sh(script: 'git log -1 --pretty=format:"%h"', returnStdout: true).trim()
-// 					def buildTriggerFile = '.last_build_commit'
-//
-// 					if (fileExists(buildTriggerFile)) {
-// 						def lastBuildCommit = readFile(buildTriggerFile).trim()
-// 						if (changes == lastBuildCommit) {
-// 							echo "No changes since last build. Skipping deployment."
-// 							currentBuild.result = 'SUCCESS'
-// 							// Stop further stages
-// 							error("Pipeline aborted: no changes detected.")
-// 						}
-// 					}
-//
-// 					// Save latest commit hash for next run
-// 					writeFile file: buildTriggerFile, text: changes
-// 				}
-// 			}
-// 		}
-//
-// 		stage('Prepare environment variables') {
-//             steps {
-//                 withCredentials([
-//                     string(credentialsId: 'skeleton_api_host', variable: 'SKELETON_API_HOST'),
-//                     string(credentialsId: 'skeleton_api_port', variable: 'SKELETON_API_PORT'),
-//                 ]) {
-//                     script {
-//                         def envContent = """SKELETON_API_HOST=${env.SKELETON_API_HOST}
-//                                             SKELETON_API_PORT=${env.SKELETON_API_PORT}
-//                                             """
-//                         writeFile file: '.env', text: envContent
-//                         echo "Created .env file with hidden environment variables."
-//                     }
-//                 }
-//             }
-//         }
-//
-// 		stage('Set Permissions') {
-// 			steps {
-// 				echo 'Setting execute permissions on scripts...'
-// 				sh 'chmod +x ./d.compose.sh'
-// 				echo 'Permissions set successfully.'
-// 			}
-// 		}
-//
+pipeline {
+	agent any
+
+	stages {
+
+		stage('Clone repository') {
+			steps {
+				echo 'Cloning the repository...'
+				git url: 'https://github.com/abdieg/skeleton_api_testing.git', branch: 'main'
+				echo 'Repository cloned successfully.'
+			}
+		}
+
+		stage('Check for changes') {
+			steps {
+				script {
+					def changes = sh(script: 'git log -1 --pretty=format:"%h"', returnStdout: true).trim()
+					def buildTriggerFile = '.last_build_commit'
+
+					if (fileExists(buildTriggerFile)) {
+						def lastBuildCommit = readFile(buildTriggerFile).trim()
+						if (changes == lastBuildCommit) {
+							echo "No changes since last build. Skipping deployment."
+							currentBuild.result = 'SUCCESS'
+							// Stop further stages
+							error("Pipeline aborted: no changes detected.")
+						}
+					}
+
+					// Save latest commit hash for next run
+					writeFile file: buildTriggerFile, text: changes
+				}
+			}
+		}
+
+		stage('Prepare environment variables') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'skeleton_api_host', variable: 'SKELETON_API_HOST'),
+                    string(credentialsId: 'skeleton_api_port', variable: 'SKELETON_API_PORT'),
+                ]) {
+                    script {
+                        def envContent = """SKELETON_API_HOST=${env.SKELETON_API_HOST}
+                                            SKELETON_API_PORT=${env.SKELETON_API_PORT}
+                                            """
+                        writeFile file: '.env', text: envContent
+                        echo "Created .env file with hidden environment variables."
+                    }
+                }
+            }
+        }
+
+		stage('Set Permissions') {
+			steps {
+				echo 'Setting execute permissions on scripts...'
+				sh 'chmod +x ./d.compose.sh'
+				echo 'Permissions set successfully.'
+			}
+		}
+
 // 		stage('Build and deploy docker image') {
 // 			steps {
 // 				echo 'Building the Docker image...'
@@ -74,6 +74,6 @@
 //                 }
 //             }
 //         }
-//
-// 	}
-// }
+
+	}
+}

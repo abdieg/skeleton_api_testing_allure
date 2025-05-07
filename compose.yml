@@ -1,0 +1,12 @@
+services:
+  fastapi_app:
+    build: .
+    env_file:
+      - .env
+    networks:
+      - skeleton_api
+    restart: unless-stopped
+
+networks:
+  skeleton_api:
+    driver: bridge
