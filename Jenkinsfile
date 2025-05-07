@@ -37,12 +37,12 @@ pipeline {
 		stage('Prepare environment variables') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'skeleton_api_host', variable: 'SKELETON_API_HOST'),
-                    string(credentialsId: 'skeleton_api_port', variable: 'SKELETON_API_PORT'),
+                    string(credentialsId: 'skeleton_api_testing_host', variable: 'QA_IP'),
+                    string(credentialsId: 'skeleton_api_testing_port', variable: 'QA_PORT'),
                 ]) {
                     script {
-                        def envContent = """SKELETON_API_HOST=${env.SKELETON_API_HOST}
-                                            SKELETON_API_PORT=${env.SKELETON_API_PORT}
+                        def envContent = """SKELETON_API_HOST=${env.QA_IP}
+                                            SKELETON_API_PORT=${env.QA_PORT}
                                             """
                         writeFile file: '.env', text: envContent
                         echo "Created .env file with hidden environment variables."
