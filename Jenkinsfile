@@ -37,8 +37,8 @@ pipeline {
 		stage('Prepare environment variables') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'skeleton_api_testing_host', variable: 'QA_IP'),
-                    string(credentialsId: 'skeleton_api_testing_port', variable: 'QA_PORT'),
+                    string(credentialsId: 'QA_IP', variable: 'QA_IP'),
+                    string(credentialsId: 'QA_PORT', variable: 'QA_PORT'),
                 ]) {
                     script {
                         def envContent = """QA_IP=${env.QA_IP}
