@@ -18,4 +18,4 @@ docker image rm skeleton_api_testing 2>/dev/null || true
 # Step 3: Build and start the new container
 # Removed --rm due to container getting deleted without saving the report first
 echo "Building and starting new container..."
-docker compose --env-file .env -p "$PROJECT_NAME" run test_runner
+docker compose --env-file .env -p "$PROJECT_NAME" run --remove-orphans test_runner
