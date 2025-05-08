@@ -11,4 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Command to run the application
-CMD ["pytest"]
+# CMD ["pytest"]
+
+# Command to run the application and create the reports folder
+CMD ["sh", "-c", "mkdir -p reports && pytest"]

@@ -3,6 +3,10 @@ import pytest
 from common.token import get_token
 
 
+print("Current working directory:", os.getcwd())
+print("Listing 'reports':", os.listdir('reports') if os.path.exists('reports') else "No 'reports' folder")
+
+
 def pytest_addoption(parser):
     parser.addoption(
         "--env",
