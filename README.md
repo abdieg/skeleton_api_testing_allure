@@ -23,3 +23,18 @@
 1. Enable VENV
 2. Go to root of the project
 3. Directly execute "pytest" command
+
+## Jenkins and CI/CD implications
+- Since we are using Docker, both APP and TESTING parts must belong to the same network. This was ensured using:
+```
+echo "Ensuring external Docker network 'skeleton_api' exists..."
+docker network inspect skeleton_api >/dev/null 2>&1 || \
+    docker network create --driver bridge skeleton_api
+```
+- Jenkins credentials were used to address environment variables:
+```
+QA_IP
+QA_PORT
+```
+- Those variables were used because there were defined in such way under settings.py file
+- Due to project being inside a VPN and using Docker, the HOST will be the container's docker name
