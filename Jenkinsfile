@@ -80,9 +80,7 @@ pipeline {
 						echo "Tests passed successfully."
 					}
 				}
-			}
-			steps {
-			    echo 'Check if report was generated...'
+				echo 'Check if report was generated...'
 			    sh 'ls -l reports'
 			}
 		}
