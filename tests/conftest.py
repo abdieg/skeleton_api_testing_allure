@@ -3,10 +3,6 @@ import pytest
 from common.token import get_token
 
 
-print("Current working directory:", os.getcwd())
-print("Listing 'reports':", os.listdir('reports') if os.path.exists('reports') else "No 'reports' folder")
-
-
 def pytest_addoption(parser):
     parser.addoption(
         "--env",
@@ -19,6 +15,8 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     env = config.getoption("--env")
     os.environ["TEST_ENV"] = env  # this is what settings.py will read
+    print("Current working directory:", os.getcwd())
+    print("Listing 'reports':", os.listdir('reports') if os.path.exists('reports') else "No 'reports' folder")
 
 
 @pytest.fixture(scope="session")

@@ -59,12 +59,12 @@ pipeline {
 			}
 		}
 
-		stage('Clean previous reports') {
-			steps {
-				echo 'Cleaning previous reports...'
-				sh 'rm -rf reports && mkdir -p reports'
-			}
-		}
+// 		stage('Clean previous reports') {
+// 			steps {
+// 				echo 'Cleaning previous reports...'
+// 				sh 'rm -rf reports && mkdir -p reports'
+// 			}
+// 		}
 
 		stage('Build and deploy docker image') {
 			steps {
