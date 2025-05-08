@@ -59,6 +59,13 @@ pipeline {
 			}
 		}
 
+		stage('Clean previous reports') {
+			steps {
+				echo 'Cleaning previous reports...'
+				sh 'rm -rf reports && mkdir -p reports'
+			}
+		}
+
 		stage('Build and deploy docker image') {
 			steps {
 				echo 'Running the testing container with pytest...'
@@ -76,14 +83,12 @@ pipeline {
 			}
 		}
 
-// 		stage('Deploy completed - Set flag') {
-//             steps {
-//                 script {
-//                     writeFile file: '/tmp/skeleton_api_status.flag', text: 'SUCCESS'
-//                     echo 'Wrote build completion flag.'
-//                 }
-//             }
-//         }
+        stage('Archive HTML report') {
+			steps {
+				echo 'Archiving pytest HTML report...'
+				archiveArtifacts artifacts: 'reports/pytest_report.html', allowEmptyArchive: false
+			}
+		}
 
 	}
 }
