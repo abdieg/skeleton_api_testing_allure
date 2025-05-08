@@ -41,8 +41,8 @@ pipeline {
                     string(credentialsId: 'skeleton_api_testing_port', variable: 'QA_PORT'),
                 ]) {
                     script {
-                        def envContent = """SKELETON_API_HOST=${env.QA_IP}
-                                            SKELETON_API_PORT=${env.QA_PORT}
+                        def envContent = """QA_IP=${env.QA_IP}
+                                            QA_PORT=${env.QA_PORT}
                                             """
                         writeFile file: '.env', text: envContent
                         echo "Created .env file with hidden environment variables."
