@@ -81,6 +81,10 @@ pipeline {
 					}
 				}
 			}
+			steps {
+			    echo 'Check if report was generated...'
+			    sh 'ls -l reports'
+			}
 		}
 
         stage('Archive HTML report') {
