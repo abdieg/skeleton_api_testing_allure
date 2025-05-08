@@ -10,8 +10,8 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Command to run the application
-# CMD ["pytest"]
+# Create reports dir inside container
+RUN mkdir -p /app/reports
 
-# Command to run the application and create the reports folder
-CMD ["sh", "-c", "mkdir -p reports && pytest"]
+# Command to run the application
+CMD ["pytest"]
