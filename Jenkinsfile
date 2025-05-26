@@ -103,7 +103,7 @@ pipeline {
 		stage('Clean up containers') {
 			steps {
 				echo 'Stopping and removing containers...'
-				sh 'docker compose --env-file .env -p skeleton_api_testing down'
+				sh 'docker compose --env-file .env -p skeleton_api_testing down --remove-orphans || true'
 			}
 		}
 

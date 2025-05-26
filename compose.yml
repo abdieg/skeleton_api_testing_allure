@@ -3,6 +3,7 @@ services:
     build: .
     env_file:
       - .env
+    user: "${HOST_UID}:${HOST_GID}" # Run as Jenkins user to avoid permission issues
     networks:
       - skeleton_api
     restart: "no"  # One execution only
