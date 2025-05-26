@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir -p /app/reports
 
 # Command to run the application
-# CMD ["pytest"]
-RUN chmod +x /app/d.run.sh
+CMD ["pytest"]
+# RUN chmod +x /app/d.run.sh
