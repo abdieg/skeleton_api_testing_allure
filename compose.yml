@@ -8,7 +8,7 @@ services:
       - skeleton_api
     restart: "no"  # One execution only
     volumes:
-      - ./reports:/app/reports # Map host to container to extract report
+      - ${PWD}/reports:/app/reports # Map host to container to extract report
 
 networks:
   skeleton_api:
