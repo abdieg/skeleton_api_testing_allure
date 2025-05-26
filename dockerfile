@@ -15,4 +15,3 @@ RUN mkdir -p /app/reports
 
 # Command to run the application
 CMD ["pytest"]
-# RUN chmod +x /app/d.run.sh
