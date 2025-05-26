@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -eu
+
 ## Name of the Compose project (optional, defaults to directory name)
 #PROJECT_NAME="skeleton_api_testing"
 #
@@ -20,28 +22,29 @@
 #echo "Building and starting new container..."
 #docker compose --env-file .env -p "$PROJECT_NAME" run --remove-orphans test_runner
 
-set -euo pipefail
+PROJECT_NAME='skeleton_api_testing'
 
-PROJECT_NAME="skeleton_api_testing"
-
-# Make host UID/GID visible to compose.yml so file ownership matches Jenkins
+# Expose host info to docker-compose (needed for user: in compose.yml)
 export HOST_UID="$(id -u)"
 export HOST_GID="$(id -g)"
+export PWD="$(pwd)"           # make sure ${PWD} expands for compose
 
-echo "🔄  Ensuring network 'skeleton_api' exists…"
+log() { printf '%s\n' "$*"; }
+
+log "🔄  Ensuring network 'skeleton_api' exists…"
 docker network inspect skeleton_api >/dev/null 2>&1 \
   || docker network create --driver bridge skeleton_api
 
-echo "🧹  Removing any previous compose stack…"
+log "🧹  Removing any previous compose stack…"
 docker compose --env-file .env -p "$PROJECT_NAME" down --remove-orphans || true
 
-echo "🚀  Building image & running tests…"
+log "🚀  Building image & running tests…"
 docker compose --env-file .env -p "$PROJECT_NAME" \
   up --build --abort-on-container-exit --exit-code-from test_runner
 
-# Capture the exit status of the test container for Jenkins
-EXIT_CODE=$(docker inspect \
-  "$PROJECT_NAME-test_runner-1" --format '{{ .State.ExitCode }}')
+# Grab the container id **after** compose finishes
+CONTAINER_ID="$(docker compose --env-file .env -p "$PROJECT_NAME" ps -q test_runner)"
+EXIT_CODE="$(docker inspect "$CONTAINER_ID" --format '{{ .State.ExitCode }}')"
 
-echo "✅  Tests finished with exit code $EXIT_CODE"
+log "✅  Tests finished with exit code $EXIT_CODE"
 exit "$EXIT_CODE"
