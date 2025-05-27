@@ -1,4 +1,4 @@
 requests
-pytest==7.4.4
-pytest-html==4.2.1
-python-dotenv>=3.0.0
+pytest
+pytest-html
+python-dotenv
