@@ -43,6 +43,13 @@ docker compose --env-file .env -p "$PROJECT_NAME" \
   up --build --abort-on-container-exit --exit-code-from test_runner
 EXIT_CODE=$?          # ← THIS is the real test exit status
 
+TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
+HOST_REPORTS_DIR="./reports"
+if [ -f "$HOST_REPORTS_DIR/pytest_report.html" ]; then
+    mv "$HOST_REPORTS_DIR/pytest_report.html" \
+       "$HOST_REPORTS_DIR/pytest_report_${TIMESTAMP}.html"
+fi
+
 # Optional tidy-up; leave it if you want the containers removed now
 docker compose --env-file .env -p "$PROJECT_NAME" down --remove-orphans || true
 
