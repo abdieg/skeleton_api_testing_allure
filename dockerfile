@@ -13,8 +13,11 @@ RUN pip install --no-cache-dir --upgrade pip
 # Install project requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install git so pip can pull packages directly from GitHub
-RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+# Install build tools required by pytest-html's hatchling hook
+# (git for VCS install, nodejs & npm for the JS assets build)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git nodejs npm && \
+    rm -rf /var/lib/apt/lists/*
 
 # Pull pytest-html from the default branch (master) which contains the banner fix
 RUN pip install --no-cache-dir "git+https://github.com/pytest-dev/pytest-html.git@master#egg=pytest-html"
