@@ -87,7 +87,6 @@ pipeline {
 			steps {
 				echo 'Check if report was generated...'
 				sh 'pwd'
-				sh 'ls -l'
 				sh 'cd reports'
 			    sh 'ls -l reports'
 			}
