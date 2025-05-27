@@ -96,7 +96,7 @@ pipeline {
         stage('Archive HTML report') {
 			steps {
 				echo 'Archiving pytest HTML report...'
-				archiveArtifacts artifacts: 'reports/pytest_report.html', allowEmptyArchive: false
+				archiveArtifacts artifacts: 'reports/pytest_report_*.html', allowEmptyArchive: false
 			}
 		}
 
