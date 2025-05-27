@@ -9,6 +9,8 @@ services:
     restart: "no"  # One execution only
     volumes:
       - ${PWD}/reports:/app/reports # Map host to container to extract report
+    environment:
+      - PYTEST_ADDOPTS=--cache-dir=/tmp/.pytest_cache
 
 networks:
   skeleton_api:
