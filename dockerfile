@@ -10,11 +10,14 @@ COPY . /app
 # Upgrade pip because old pip sometimes chokes on newer metadata
 RUN pip install --no-cache-dir --upgrade pip
 
-# Install any needed packages specified in requirements.txt
+# Install project requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Force pytest-html (latest main, banner fix) without needing git
-RUN pip install --no-cache-dir "pytest-html @ https://github.com/pytest-dev/pytest-html/archive/refs/heads/main.zip"
+# Install git so pip can pull packages directly from GitHub
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+
+# Force pytest-html (main branch, banner fix) via git URL
+RUN pip install --no-cache-dir "git+https://github.com/pytest-dev/pytest-html@main#egg=pytest-html"
 
 # Create reports dir inside container
 RUN mkdir -p /app/reports
