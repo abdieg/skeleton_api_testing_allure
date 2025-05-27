@@ -10,6 +10,9 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Force pytest-html greater than 4.2.1 to fix banner issue
+RUN pip install --no-cache-dir "pytest-html>=4.2.1"
+
 # Create reports dir inside container
 RUN mkdir -p /app/reports
 
