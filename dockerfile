@@ -16,8 +16,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Install git so pip can pull packages directly from GitHub
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 
-# Force pytest-html (main branch, banner fix) via git URL
-RUN pip install --no-cache-dir "git+https://github.com/pytest-dev/pytest-html@main#egg=pytest-html"
+# Pull pytest-html from the default branch (master) which contains the banner fix
+RUN pip install --no-cache-dir "git+https://github.com/pytest-dev/pytest-html.git@master#egg=pytest-html"
 
 # Create reports dir inside container
 RUN mkdir -p /app/reports
