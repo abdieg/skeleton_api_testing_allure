@@ -7,11 +7,14 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Upgrade pip because old pip sometimes chokes on newer metadata
+RUN pip install --no-cache-dir --upgrade pip
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Force pytest-html greater than 4.2.1 to fix banner issue
-RUN pip install --no-cache-dir "pytest-html>=4.2.1"
+RUN pip install --no-cache-dir --extra-index-url https://pypi.org/simple "pytest-html>=4.2.1"
 
 # Create reports dir inside container
 RUN mkdir -p /app/reports
