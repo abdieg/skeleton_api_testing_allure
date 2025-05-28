@@ -15,13 +15,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ---------- Allure CLI installation ----------
 ENV ALLURE_VERSION=2.27.0
+
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget openjdk-11-jre-headless && \
-    wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz && \
-    tar -xzf allure-${ALLURE_VERSION}.tgz -C /opt && \
-    ln -s /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure && \
-    rm allure-${ALLURE_VERSION}.tgz && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends \
+        wget \
+        default-jre-headless \
+    && wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz \
+    && tar -xzf allure-${ALLURE_VERSION}.tgz -C /opt \
+    && rm allure-${ALLURE_VERSION}.tgz \
+    && apt-get purge -y --auto-remove wget \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create reports dir inside container
 RUN mkdir -p /app/reports
