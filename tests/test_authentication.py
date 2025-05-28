@@ -1,4 +1,4 @@
-import pytest
+import allure
 import logging
 from common.api_call import api_call
 

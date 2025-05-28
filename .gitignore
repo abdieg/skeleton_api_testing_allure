@@ -3,4 +3,5 @@
 .pytest_cache
 *.html
 .env
-.reports
+reports/allure-results
+reports/allure-report

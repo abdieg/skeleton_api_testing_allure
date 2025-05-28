@@ -1,6 +1,10 @@
-import pytest
 import logging
+
+import pytest
+import allure
+
 from common.api_call import api_call
+from common import settings
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -35,6 +39,8 @@ EXPECTED_EQUIPMENT_KEYS = {
 }
 
 
+@allure.feature("Schema validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.schema
 @pytest.mark.regression
@@ -42,8 +48,16 @@ def test_person_root_structure_only():
     """
     Validate that the /person response contains the expected top-level keys.
     """
-    logger.info("Calling /person with no parameters")
-    response = api_call(method="GET", endpoint="/person")
+    allure.dynamic.parameter("env", settings.env)
+
+    with allure.step("GET /person (no params)"):
+        logger.info("Calling /person with no parameters")
+        response = api_call(method="GET", endpoint="/person")
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
 
     logger.info(f"Status code: {response.status_code}")
     assert response.status_code == 200
@@ -54,6 +68,8 @@ def test_person_root_structure_only():
     assert set(data.keys()) == EXPECTED_TOP_LEVEL_KEYS
 
 
+@allure.feature("Schema validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.schema
 @pytest.mark.regression
@@ -61,8 +77,16 @@ def test_person_equipment_structure_only():
     """
     Validate the structure of the 'equipment' field in the /person response.
     """
-    logger.info("Calling /person with no parameters to check 'equipment' field")
-    response = api_call(method="GET", endpoint="/person")
+    allure.dynamic.parameter("env", settings.env)
+
+    with allure.step("GET /person (equipment check)"):
+        logger.info("Calling /person with no parameters to check 'equipment' field")
+        response = api_call(method="GET", endpoint="/person")
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
 
     logger.info(f"Status code: {response.status_code}")
     assert response.status_code == 200
@@ -80,6 +104,8 @@ def test_person_equipment_structure_only():
         assert set(item.keys()) == EXPECTED_EQUIPMENT_KEYS
 
 
+@allure.feature("Schema validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.schema
 @pytest.mark.parametrize("is_employee_param", [None, "true", "false"])
@@ -88,8 +114,16 @@ def test_person_is_employee_param(is_employee_param):
     Validate the /person API response schema with and without query params.
     """
     params = f"?is_employee={is_employee_param}" if is_employee_param else ""
-    logger.debug(f"Calling /person{params}")
-    response = api_call(method="GET", endpoint=f"/person{params}")
+    allure.dynamic.parameter("env", settings.env)
+
+    with allure.step(f"GET /person{params}"):
+        logger.debug(f"Calling /person{params}")
+        response = api_call(method="GET", endpoint=f"/person{params}")
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
 
     logger.info(f"Status code: {response.status_code}")
     assert response.status_code == 200

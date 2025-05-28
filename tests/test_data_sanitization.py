@@ -1,6 +1,9 @@
-import pytest
 import logging
+import pytest
+import allure
+
 from common.api_call import api_call
+from common import settings
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -13,6 +16,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@allure.feature("Data sanitization validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_sanitization
 @pytest.mark.regression
@@ -20,12 +25,24 @@ def test_query_param_sql_injection_attempt():
     """
     Attempt SQL injection through 'is_employee' query param.
     """
+    allure.dynamic.parameter("env", settings.env)
     malicious_value = "' OR '1'='1"
-    response = api_call(method="GET", endpoint=f"/person?is_employee={malicious_value}")
+    with allure.step("GET /person SQL injection via query param"):
+        response = api_call(
+            method="GET",
+            endpoint=f"/person?is_employee={malicious_value}",
+        )
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
     logger.debug(f"Response: {response.status_code}")
     assert response.status_code in (400, 422)  # Should be rejected
 
 
+@allure.feature("Data sanitization validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_sanitization
 @pytest.mark.regression
@@ -33,8 +50,18 @@ def test_query_param_script_injection():
     """
     Attempt script injection through query param.
     """
+    allure.dynamic.parameter("env", settings.env)
     malicious_value = "<script>alert('XSS')</script>"
-    response = api_call(method="GET", endpoint=f"/person?is_employee={malicious_value}")
+    with allure.step("GET /person script tag via query param"):
+        response = api_call(
+            method="GET",
+            endpoint=f"/person?is_employee={malicious_value}",
+        )
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
     assert response.status_code in (400, 422)
 
 

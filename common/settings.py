@@ -7,7 +7,7 @@ load_dotenv()
 
 # Default endpoints
 default_ip = "127.0.0.1"
-default_port = "11000"
+default_port = "10200"
 
 # Load custom IPs and ports from environment variables if present
 dev_ip = os.getenv("DEV_IP", default_ip)

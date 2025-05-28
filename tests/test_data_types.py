@@ -1,6 +1,9 @@
-import pytest
 import logging
+import pytest
+import allure
+
 from common.api_call import api_call
+from common import settings
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -16,14 +19,23 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="module")
 def person_response():
-    logger.info("Calling /person to retrieve data for type validation")
-    response = api_call(method="GET", endpoint="/person")
+    """Retrieve /person response for data‑type tests."""
+    allure.dynamic.parameter("env", settings.env)
+
+    with allure.step("GET /person"):
+        response = api_call(method="GET", endpoint="/person")
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
+
     assert response.status_code == 200
     return response.json()
 
 
-# Top-level fields
-
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -31,6 +43,8 @@ def test_name_is_string(person_response):
     assert isinstance(person_response["name"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -38,6 +52,8 @@ def test_dob_is_string(person_response):
     assert isinstance(person_response["dob"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -45,6 +61,8 @@ def test_email_is_string(person_response):
     assert isinstance(person_response["email"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -52,6 +70,8 @@ def test_phone_is_string(person_response):
     assert isinstance(person_response["phone"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -59,6 +79,8 @@ def test_address_is_string(person_response):
     assert isinstance(person_response["address"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -66,6 +88,8 @@ def test_zip_code_is_string(person_response):
     assert isinstance(person_response["zip_code"], str)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -73,6 +97,8 @@ def test_is_employee_is_boolean(person_response):
     assert isinstance(person_response["is_employee"], bool)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -80,6 +106,8 @@ def test_salary_is_float(person_response):
     assert isinstance(person_response["salary"], float)
 
 
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression
@@ -87,8 +115,8 @@ def test_company_is_string(person_response):
     assert isinstance(person_response["company"], str)
 
 
-# Equipment list and nested items
-
+@allure.feature("Data type validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_types
 @pytest.mark.regression

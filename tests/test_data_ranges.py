@@ -1,7 +1,11 @@
 from datetime import datetime
-import pytest
 import logging
+
+import pytest
+import allure
+
 from common.api_call import api_call
+from common import settings
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -17,12 +21,23 @@ logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="module")
 def person_response():
-    logger.info("Calling /person to retrieve data for range validation")
-    response = api_call(method="GET", endpoint="/person")
+    """Retrieve /person response for range‑validation tests."""
+    allure.dynamic.parameter("env", settings.env)
+
+    with allure.step("GET /person"):
+        response = api_call(method="GET", endpoint="/person")
+        allure.attach(
+            str(response.json()),
+            name="response-body",
+            attachment_type=allure.attachment_type.JSON,
+        )
+
     assert response.status_code == 200
     return response.json()
 
 
+@allure.feature("Data range validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_ranges
 @pytest.mark.regression
@@ -39,6 +54,8 @@ def test_dob_is_within_age_range(person_response):
     assert 18 <= age <= 90
 
 
+@allure.feature("Data range validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_ranges
 @pytest.mark.regression
@@ -51,6 +68,8 @@ def test_salary_is_within_expected_range(person_response):
     assert 15000 <= salary <= 120000
 
 
+@allure.feature("Data range validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_ranges
 @pytest.mark.regression
@@ -63,6 +82,8 @@ def test_equipment_list_length_is_between_1_and_5(person_response):
     assert 1 <= len(equipment) <= 5
 
 
+@allure.feature("Data range validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_ranges
 @pytest.mark.regression
@@ -76,6 +97,8 @@ def test_equipment_price_is_within_expected_range(person_response):
         assert 10 <= price <= 500
 
 
+@allure.feature("Data range validation")
+@allure.severity(allure.severity_level.NORMAL)
 @pytest.mark.main
 @pytest.mark.data_ranges
 @pytest.mark.regression
