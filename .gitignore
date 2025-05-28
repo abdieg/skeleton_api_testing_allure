@@ -5,3 +5,4 @@
 .env
 reports/allure-results
 reports/allure-report
+*.backup

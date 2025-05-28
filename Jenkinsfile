@@ -1,110 +1,120 @@
 pipeline {
-	agent any
+    agent any
 
-	stages {
+    environment {
+        PROJECT_NAME      = "skeleton_api_testing"
+        IMAGE_NAME        = "skeleton_api_test"
+        NETWORK_NAME      = "skeleton_api"
+        REPORTS_HOST_DIR  = "${WORKSPACE}/reports"
+    }
 
-		stage('Clone repository') {
-			steps {
-				echo 'Cloning the repository...'
-				git url: 'https://github.com/abdieg/skeleton_api_testing.git', branch: 'main'
-				echo 'Repository cloned successfully.'
-			}
-		}
+    stages {
 
-		stage('Check for changes') {
-			steps {
-			    echo 'Check for changes is commented because testing suite can be executed on demand.'
-// 				script {
-// 					def changes = sh(script: 'git log -1 --pretty=format:"%h"', returnStdout: true).trim()
-// 					def buildTriggerFile = '.last_build_commit'
-//
-// 					if (fileExists(buildTriggerFile)) {
-// 						def lastBuildCommit = readFile(buildTriggerFile).trim()
-// 						if (changes == lastBuildCommit) {
-// 							echo "No changes since last build. Skipping deployment."
-// 							currentBuild.result = 'SUCCESS'
-// 							// Stop further stages
-// 							error("Pipeline aborted: no changes detected.")
-// 						}
-// 					}
-//
-// 					// Save latest commit hash for next run
-// 					writeFile file: buildTriggerFile, text: changes
-// 				}
-			}
-		}
+        stage('Clone repository') {
+            steps {
+                checkout scm
+            }
+        }
 
-		stage('Prepare environment variables') {
+//         stage('Check for changes') {
+//             when {
+//                 changeset "**"
+//             }
+//             steps {
+//                 echo 'Changes detected – proceeding with pipeline.'
+//             }
+//         }
+
+        stage('Prepare environment variables') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'QA_IP', variable: 'QA_IP'),
-                    string(credentialsId: 'QA_PORT', variable: 'QA_PORT'),
+                    string(credentialsId: 'QA_IP',   variable: 'QA_IP'),
+                    string(credentialsId: 'QA_PORT', variable: 'QA_PORT')
                 ]) {
-                    script {
-                        def envContent = """QA_IP=${env.QA_IP}
-                                            QA_PORT=${env.QA_PORT}
-                                            """
-                        writeFile file: '.env', text: envContent
-                        echo "Created .env file with hidden environment variables."
-                    }
+                    sh '''
+                        cat > .env <<EOF
+                        QA_IP=${QA_IP}
+                        QA_PORT=${QA_PORT}
+                        EOF
+                    '''
                 }
             }
         }
 
-		stage('Set Permissions') {
-			steps {
-				echo 'Setting execute permissions on scripts...'
-				sh 'chmod +x ./d.compose.sh'
-				echo 'Permissions set successfully.'
-			}
-		}
+        stage('Ensure Docker network exists') {
+            steps {
+                sh '''
+                    docker network inspect ${NETWORK_NAME} >/dev/null 2>&1 || \
+                    docker network create ${NETWORK_NAME}
+                '''
+            }
+        }
 
-// 		stage('Clean previous reports') {
-// 			steps {
-// 				echo 'Cleaning previous reports...'
-// 				sh 'rm -rf reports && mkdir -p reports'
-// 			}
-// 		}
+//         stage('Reset previous stack & reports') {
+//             steps {
+//                 echo 'Cleaning previous compose stack and reports...'
+//                 sh '''
+//                     docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true
+//                     rm -rf reports && mkdir -p reports
+//                 '''
+//             }
+//         }
+//
+//         stage('Build image & run tests') {
+//             steps {
+//                 echo 'Building image and executing pytest inside docker‑compose...'
+//                 script {
+//                     def exitCode = sh(
+//                         script: '''
+//                             set -e
+//                             docker compose --env-file .env -p ${PROJECT_NAME} \
+//                               up --build --abort-on-container-exit --exit-code-from test_runner
+//                         ''',
+//                         returnStatus: true
+//                     )
+//                     if (exitCode != 0) {
+//                         error "Test container exited with status ${exitCode}"
+//                     }
+//                 }
+//             }
+//         }
+//
+//         stage('Generate Allure HTML') {
+//             steps {
+//                 echo 'Generating Allure HTML report...'
+//                 sh '''
+//                     docker run --rm \
+//                       -v ${REPORTS_HOST_DIR}:/app/reports \
+//                       ${IMAGE_NAME} \
+//                       allure generate /app/reports/allure-results \
+//                                      -o /app/reports/allure-report --clean
+//                 '''
+//             }
+//         }
+//
+//         stage('Validate report generation') {
+//             steps {
+//                 sh 'ls -R reports'
+//             }
+//         }
+//
+//         stage('Archive HTML report') {
+//             steps {
+//                 archiveArtifacts artifacts: 'reports/allure-report/**', allowEmptyArchive: false
+//             }
+//         }
+//
+//         stage('Clean up containers') {
+//             steps {
+//                 echo 'Stopping and removing containers...'
+//                 sh 'docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true'
+//             }
+//         }
+    }
 
-		stage('Build and deploy docker image') {
-			steps {
-				echo 'Running the testing container with pytest...'
-				script {
-					def exitCode = sh(script: './d.compose.sh', returnStatus: true)
-					if (exitCode != 0)
-					{
-						error("Tests failed with exit code ${exitCode}")
-					}
-					else
-					{
-						echo "Tests passed successfully."
-					}
-				}
-			}
-		}
-
-		stage('Validate report generation') {
-			steps {
-				echo 'Check if report was generated...'
-				sh 'pwd'
-				sh 'cd reports'
-			    sh 'ls -l reports'
-			}
-		}
-
-        stage('Archive HTML report') {
-			steps {
-				echo 'Archiving pytest HTML report...'
-				archiveArtifacts artifacts: 'reports/pytest_report_*.html', allowEmptyArchive: false
-			}
-		}
-
-		stage('Clean up containers') {
-			steps {
-				echo 'Stopping and removing containers...'
-				sh 'docker compose --env-file .env -p skeleton_api_testing down --remove-orphans || true'
-			}
-		}
-
-	}
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }

@@ -13,14 +13,15 @@ RUN pip install --no-cache-dir --upgrade pip
 # Install project requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install build tools required by pytest-html's hatchling hook
-# (git for VCS install, nodejs & npm for the JS assets build)
+# ---------- Allure CLI installation ----------
+ENV ALLURE_VERSION=2.27.0
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git nodejs npm && \
+    apt-get install -y --no-install-recommends wget openjdk-11-jre-headless && \
+    wget -q https://github.com/allure-framework/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz && \
+    tar -xzf allure-${ALLURE_VERSION}.tgz -C /opt && \
+    ln -s /opt/allure-${ALLURE_VERSION}/bin/allure /usr/bin/allure && \
+    rm allure-${ALLURE_VERSION}.tgz && \
     rm -rf /var/lib/apt/lists/*
-
-# Pull pytest-html from the default branch (master) which contains the banner fix
-RUN pip install --no-cache-dir "git+https://github.com/pytest-dev/pytest-html.git@master#egg=pytest-html"
 
 # Create reports dir inside container
 RUN mkdir -p /app/reports
