@@ -78,37 +78,37 @@ pipeline {
             }
         }
 
-//         stage('Generate Allure HTML') {
-//             steps {
-//                 echo 'Generating Allure HTML report...'
-//                 sh '''
-//                     docker run --rm \
-//                       -v ${REPORTS_HOST_DIR}:/app/reports \
-//                       ${IMAGE_NAME} \
-//                       allure generate /app/reports/allure-results \
-//                                      -o /app/reports/allure-report --clean
-//                 '''
-//             }
-//         }
-//
-//         stage('Validate report generation') {
-//             steps {
-//                 sh 'ls -R reports'
-//             }
-//         }
-//
-//         stage('Archive HTML report') {
-//             steps {
-//                 archiveArtifacts artifacts: 'reports/allure-report/**', allowEmptyArchive: false
-//             }
-//         }
-//
-//         stage('Clean up containers') {
-//             steps {
-//                 echo 'Stopping and removing containers...'
-//                 sh 'docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true'
-//             }
-//         }
+        stage('Generate Allure HTML') {
+            steps {
+                echo 'Generating Allure HTML report...'
+                sh '''
+                    docker run --rm \
+                      -v ${REPORTS_HOST_DIR}:/app/reports \
+                      ${IMAGE_NAME} \
+                      allure generate /app/reports/allure-results \
+                                     -o /app/reports/allure-report --clean
+                '''
+            }
+        }
+
+        stage('Validate report generation') {
+            steps {
+                sh 'ls -R reports'
+            }
+        }
+
+        stage('Archive HTML report') {
+            steps {
+                archiveArtifacts artifacts: 'reports/allure-report/**', allowEmptyArchive: false
+            }
+        }
+
+        stage('Clean up containers') {
+            steps {
+                echo 'Stopping and removing containers...'
+                sh 'docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true'
+            }
+        }
     }
 
     post {
