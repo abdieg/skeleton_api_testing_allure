@@ -6,7 +6,7 @@ services:
     user: "${HOST_UID}:${HOST_GID}" # Run as Jenkins user to avoid permission issues
     networks:
       - skeleton_api
-    restart: "no"  # One execution only
+    restart: "on-failure"  # no = One execution only
     volumes:
       - ${PWD}/reports:/app/reports # Map host to container to extract report
 
