@@ -50,35 +50,34 @@ pipeline {
             }
         }
 
-//         stage('Reset previous stack & reports') {
-//             steps {
-//                 echo 'Cleaning previous compose stack and reports...'
-//                 sh '''
-//                     docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true
-//                     rm -rf reports && mkdir -p reports
-//                 '''
-//             }
-//         }
-//
-//         stage('Build image & run tests') {
-//             steps {
-//                 echo 'Building image and executing pytest inside docker‑compose...'
-//                 script {
-//                     def exitCode = sh(
-//                         script: '''
-//                             set -e
-//                             docker compose --env-file .env -p ${PROJECT_NAME} \
-//                               up --build --abort-on-container-exit --exit-code-from test_runner
-//                         ''',
-//                         returnStatus: true
-//                     )
-//                     if (exitCode != 0) {
-//                         error "Test container exited with status ${exitCode}"
-//                     }
-//                 }
-//             }
-//         }
-//
+        stage('Reset previous stack') {
+            steps {
+                echo 'Cleaning previous compose stack'
+                sh '''
+                    docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true
+                '''
+            }
+        }
+
+        stage('Build image & run tests') {
+            steps {
+                echo 'Building image and executing pytest inside docker‑compose...'
+                script {
+                    def exitCode = sh(
+                        script: '''
+                            set -e
+                            docker compose --env-file .env -p ${PROJECT_NAME} \
+                              up --build --abort-on-container-exit --exit-code-from test_runner
+                        ''',
+                        returnStatus: true
+                    )
+                    if (exitCode != 0) {
+                        error "Test container exited with status ${exitCode}"
+                    }
+                }
+            }
+        }
+
 //         stage('Generate Allure HTML') {
 //             steps {
 //                 echo 'Generating Allure HTML report...'
