@@ -43,15 +43,15 @@ pipeline {
             }
         }
 
-        stage('Detect UID/GID') {
-            steps {
-                script {
-                    env.HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
-                    env.HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
-                    echo "Running Docker as UID=${env.HOST_UID}, GID=${env.HOST_GID}"
-                }
-            }
-        }
+//         stage('Detect UID/GID') {
+//             steps {
+//                 script {
+//                     env.HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
+//                     env.HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
+//                     echo "Running Docker as UID=${env.HOST_UID}, GID=${env.HOST_GID}"
+//                 }
+//             }
+//         }
 
         stage('Ensure Docker network exists') {
             steps {
