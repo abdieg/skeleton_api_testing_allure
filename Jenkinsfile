@@ -7,6 +7,8 @@ pipeline {
         CONTAINER_NAME = 'skeleton_api_testing_container'
         NETWORK_NAME = 'skeleton_api'
         ALLURE_VERSION = '2.27.0'
+        HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
+        HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
     }
 
     stages {
@@ -59,6 +61,7 @@ pipeline {
             steps {
                 sh """
                     docker run --name ${CONTAINER_NAME} \\
+                        -u ${HOST_UID}:${HOST_GID} \\
                         --env-file .env \\
                         --network ${NETWORK_NAME} \\
                         -v "\${PWD}/reports:/app/reports" \\
@@ -83,6 +86,7 @@ pipeline {
             steps {
                 sh """
                     docker run --rm \\
+                        -u ${HOST_UID}:${HOST_GID} \\
                         -v "\${PWD}/reports:/app/reports" \\
                         ${IMAGE_NAME} \\
                         /opt/allure-${ALLURE_VERSION}/bin/allure generate /app/reports/allure-results -o /app/reports/allure-report --clean
