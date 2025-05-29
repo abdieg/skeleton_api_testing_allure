@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PROJECT_NAME      = "skeleton_api_testing"
-        IMAGE_NAME        = "skeleton_api_test"
+        IMAGE_NAME        = "${PROJECT_NAME}_test_runner"
         NETWORK_NAME      = "skeleton_api"
         REPORTS_HOST_DIR  = "${WORKSPACE}/reports"
     }
@@ -88,9 +88,9 @@ pipeline {
             steps {
                 echo 'Generating Allure HTML report...'
                 sh '''
-                    docker run --rm \
+                    docker compose --env-file .env -p ${PROJECT_NAME} run --no-deps --rm \
                       -v ${REPORTS_HOST_DIR}:/app/reports \
-                      ${IMAGE_NAME} \
+                      test_runner \
                       allure generate /app/reports/allure-results \
                                      -o /app/reports/allure-report --clean
                 '''
