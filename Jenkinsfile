@@ -57,13 +57,20 @@ pipeline {
 
         stage('Run tests in container') {
             steps {
-                sh """
-                    docker run --name ${CONTAINER_NAME} \\
-                        --env-file .env \\
-                        --network ${NETWORK_NAME} \\
-                        -v "\${PWD}/reports:/app/reports" \\
-                        ${IMAGE_NAME}
-                """
+                script {
+                    def uid = sh(script: 'id -u', returnStdout: true).trim()
+                    def gid = sh(script: 'id -g', returnStdout: true).trim()
+
+                    sh """
+                        docker run --rm \\
+                            --name ${CONTAINER_NAME} \\
+                            --env-file .env \\
+                            --network ${NETWORK_NAME} \\
+                            -v "\${PWD}/reports:/app/reports" \\
+                            -u ${uid}:${gid} \\
+                            ${IMAGE_NAME}
+                    """
+                }
             }
         }
 
