@@ -6,6 +6,7 @@ pipeline {
         IMAGE_NAME = 'skeleton_api_testing_image'
         CONTAINER_NAME = 'skeleton_api_testing_container'
         NETWORK_NAME = 'skeleton_api'
+        ALLURE_VERSION = '2.27.0'
     }
 
     stages {
