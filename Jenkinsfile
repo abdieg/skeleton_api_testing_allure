@@ -2,30 +2,21 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME      = "skeleton_api_testing"
-        IMAGE_NAME        = "${PROJECT_NAME}_test_runner"
-        NETWORK_NAME      = "skeleton_api"
-        REPORTS_HOST_DIR  = "${WORKSPACE}/reports"
-        HOST_UID          = ""
-        HOST_GID          = ""
+        PROJECT_NAME = 'skeleton_api_testing'
+        IMAGE_NAME = 'skeleton_api_testing_image'
+        CONTAINER_NAME = 'skeleton_api_testing_container'
+        NETWORK_NAME = 'skeleton_api'
     }
 
     stages {
 
         stage('Clone repository') {
             steps {
+                echo 'Cloning the repository...'
                 checkout scm
+                echo 'Repository cloned successfully.'
             }
         }
-
-//         stage('Check for changes') {
-//             when {
-//                 changeset "**"
-//             }
-//             steps {
-//                 echo 'Changes detected – proceeding with pipeline.'
-//             }
-//         }
 
         stage('Prepare environment variables') {
             steps {
@@ -43,50 +34,35 @@ pipeline {
             }
         }
 
-//         stage('Detect UID/GID') {
-//             steps {
-//                 script {
-//                     env.HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
-//                     env.HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
-//                     echo "Running Docker as UID=${env.HOST_UID}, GID=${env.HOST_GID}"
-//                 }
-//             }
-//         }
-
-        stage('Ensure Docker network exists') {
+        stage('Ensure docker network exists') {
             steps {
+                echo "Checking if Docker network '${env.NETWORK_NAME}' exists..."
                 sh '''
-                    docker network inspect ${NETWORK_NAME} >/dev/null 2>&1 || \
-                    docker network create ${NETWORK_NAME}
+                    if ! docker network inspect ${NETWORK_NAME} >/dev/null 2>&1; then
+                        echo "Docker network '${NETWORK_NAME}' not found. Creating it..."
+                        docker network create ${NETWORK_NAME}
+                    else
+                        echo "Docker network '${NETWORK_NAME}' already exists."
+                    fi
                 '''
             }
         }
 
-        stage('Reset previous stack') {
+        stage('Build docker image') {
             steps {
-                echo 'Cleaning previous compose stack'
-                sh '''
-                    docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true
-                '''
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
-        stage('Build image & run tests') {
+        stage('Run tests in container') {
             steps {
-                echo 'Building image and executing pytest inside docker‑compose...'
-                script {
-                    def exitCode = sh(
-                        script: '''
-                            set -e
-                            docker compose --env-file .env -p ${PROJECT_NAME} \
-                              up --build --abort-on-container-exit --exit-code-from test_runner
-                        ''',
-                        returnStatus: true
-                    )
-                    if (exitCode != 0) {
-                        error "Test container exited with status ${exitCode}"
-                    }
-                }
+                sh """
+                    docker run --name ${CONTAINER_NAME} \\
+                        --env-file .env \\
+                        --network ${NETWORK_NAME} \\
+                        -v "\${PWD}/reports:/app/reports" \\
+                        ${IMAGE_NAME}
+                """
             }
         }
 
@@ -96,42 +72,31 @@ pipeline {
             }
         }
 
-        stage('Generate Allure HTML') {
+        stage('Generate Allure report') {
             steps {
-                echo 'Generating Allure HTML report...'
-                sh '''
-                    docker compose --env-file .env -p ${PROJECT_NAME} run --no-deps --rm \
-                      -v ${REPORTS_HOST_DIR}:/app/reports \
-                      test_runner \
-                      allure generate /app/reports/allure-results \
-                                     -o /app/reports/allure-report --clean
-                '''
+                sh """
+                    docker run --rm \\
+                        -v "\${PWD}/reports:/app/reports" \\
+                        ${IMAGE_NAME} \\
+                        /opt/allure-${ALLURE_VERSION}/bin/allure generate /app/reports/allure-results -o /app/reports/allure-report --clean
+                """
             }
         }
 
-        stage('Validate report generation') {
+        stage('Publish Allure Report') {
             steps {
-                sh 'ls -R reports'
+                allure includeProperties: false, jdk: '', results: [[path: 'reports/allure-report']]
             }
         }
 
-        stage('Archive HTML report') {
-            steps {
-                archiveArtifacts artifacts: 'reports/allure-report/**', allowEmptyArchive: false
-            }
-        }
-
-        stage('Clean up containers') {
-            steps {
-                echo 'Stopping and removing containers...'
-                sh 'docker compose --env-file .env -p ${PROJECT_NAME} down --remove-orphans || true'
-            }
-        }
     }
 
     post {
         always {
-            cleanWs()
+            script {
+                // Cleanup container (if exists)
+                sh "docker rm -f ${CONTAINER_NAME} || true"
+            }
         }
     }
 }
