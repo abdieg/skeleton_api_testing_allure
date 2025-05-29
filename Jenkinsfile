@@ -6,6 +6,8 @@ pipeline {
         IMAGE_NAME        = "${PROJECT_NAME}_test_runner"
         NETWORK_NAME      = "skeleton_api"
         REPORTS_HOST_DIR  = "${WORKSPACE}/reports"
+        HOST_UID          = ""
+        HOST_GID          = ""
     }
 
     stages {
@@ -37,6 +39,16 @@ pipeline {
                         QA_PORT=${QA_PORT}
                         EOF
                     '''
+                }
+            }
+        }
+
+        stage('Detect UID/GID') {
+            steps {
+                script {
+                    env.HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
+                    env.HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
+                    echo "Running Docker as UID=${env.HOST_UID}, GID=${env.HOST_GID}"
                 }
             }
         }
