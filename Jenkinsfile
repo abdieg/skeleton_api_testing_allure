@@ -78,7 +78,7 @@ pipeline {
             }
         }
 
-        stage('Validate report generation') {
+        stage('Validate if any report was generated as of now') {
             steps {
                 sh 'ls -R reports'
             }
