@@ -57,26 +57,25 @@ pipeline {
 
         stage('Run tests in container') {
             steps {
-                script {
-                    def uid = sh(script: 'id -u', returnStdout: true).trim()
-                    def gid = sh(script: 'id -g', returnStdout: true).trim()
-
-                    sh """
-                        docker run --rm \\
-                            --name ${CONTAINER_NAME} \\
-                            --env-file .env \\
-                            --network ${NETWORK_NAME} \\
-                            -v "\${PWD}/reports:/app/reports" \\
-                            -u ${uid}:${gid} \\
-                            ${IMAGE_NAME}
-                    """
-                }
+                sh """
+                    docker run --name ${CONTAINER_NAME} \\
+                        --env-file .env \\
+                        --network ${NETWORK_NAME} \\
+                        -v "\${PWD}/reports:/app/reports" \\
+                        ${IMAGE_NAME}
+                """
             }
         }
 
         stage('Validate if any report was generated as of now') {
             steps {
                 sh 'ls -R reports'
+            }
+        }
+
+        stage('Fix Permissions') {
+            steps {
+                sh 'chmod -R a+rw reports/allure-report || true'
             }
         }
 
