@@ -78,6 +78,12 @@ pipeline {
             }
         }
 
+        stage('Validate report generation') {
+            steps {
+                sh 'ls -R reports'
+            }
+        }
+
         stage('Generate Allure HTML') {
             steps {
                 echo 'Generating Allure HTML report...'
