@@ -75,18 +75,24 @@ pipeline {
             }
         }
 
-//         stage('Generate Allure report') {
-//             steps {
-//                 sh """
-//                     docker run --rm \\
-//                         -u \$(id -u):\$(id -g) \\
-//                         -v "\${PWD}/reports/allure-results:/app/allure-results" \\
-//                         -v "\${PWD}/reports/allure-report:/app/allure-report" \\
-//                         allure/allure-cli:2.27.0 \\
-//                         generate /app/allure-results -o /app/allure-report --clean
-//                 """
-//             }
-//         }
+        stage('Generate Allure report') {
+            steps {
+                // Clean and recreate the output folder with correct permissions
+                sh '''
+                    rm -rf reports/allure-report
+                    mkdir -p reports/allure-report
+                    chmod -R 777 reports/allure-report
+                '''
+                sh """
+                    docker run --rm \\
+                        -u \$(id -u):\$(id -g) \\
+                        -v "\${PWD}/reports/allure-results:/app/allure-results" \\
+                        -v "\${PWD}/reports/allure-report:/app/allure-report" \\
+                        allure/allure-cli:{ALLURE_VERSION} \\
+                        generate /app/allure-results -o /app/allure-report --clean
+                """
+            }
+        }
 
         stage('Publish Allure Report') {
             steps {
