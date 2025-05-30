@@ -75,21 +75,15 @@ pipeline {
             }
         }
 
-        stage('Fix Permissions') {
-            steps {
-                //sh 'chmod -R a+rw reports/allure-report || true'
-                sh 'rm -rf reports/allure-report'
-            }
-        }
-
         stage('Generate Allure report') {
             steps {
                 sh """
                     docker run --rm \\
-                        -u ${HOST_UID}:${HOST_GID} \\
-                        -v "\${PWD}/reports:/app/reports" \\
-                        ${IMAGE_NAME} \\
-                        /opt/allure-${ALLURE_VERSION}/bin/allure generate /app/reports/allure-results -o /app/reports/allure-report --clean
+                        -u \$(id -u):\$(id -g) \\
+                        -v "\${PWD}/reports:/app/allure-results" \\
+                        -v "\${PWD}/reports:/app/allure-report" \\
+                        ghcr.io/allure-framework/allure-docker-service/allure-cli:${ALLURE_VERSION} \\
+                        generate /app/allure-results/allure-results -o /app/allure-report/allure-report --clean
                 """
             }
         }
