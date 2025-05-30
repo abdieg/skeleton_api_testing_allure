@@ -55,12 +55,7 @@ pipeline {
 
         stage('Build docker image') {
             steps {
-                sh '''
-                    docker build \
-                        --build-arg HOST_UID=$(id -u) \
-                        --build-arg HOST_GID=$(id -g) \
-                        -t ${IMAGE_NAME} .
-                '''
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
@@ -72,6 +67,16 @@ pipeline {
                         --network ${NETWORK_NAME} \
                         -v "${PWD}/reports:/app/reports" \
                         ${IMAGE_NAME}
+                '''
+            }
+        }
+
+        stage('Fix report permissions') {
+            steps {
+                sh '''
+                    docker run --rm \
+                        -v "$PWD/reports:/data" \
+                        alpine chown -R $(id -u):$(id -g) /data || true
                 '''
             }
         }
