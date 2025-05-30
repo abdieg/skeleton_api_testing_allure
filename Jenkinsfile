@@ -67,10 +67,10 @@ pipeline {
         stage('Run tests in container') {
             steps {
                 sh '''
-                    docker run --name ${CONTAINER_NAME} \\
-                        --env-file .env \\
-                        --network ${NETWORK_NAME} \\
-                        -v "\${PWD}/reports:/app/reports" \\
+                    docker run --name ${CONTAINER_NAME} \
+                        --env-file .env \
+                        --network ${NETWORK_NAME} \
+                        -v "${PWD}/reports:/app/reports" \
                         ${IMAGE_NAME}
                 '''
             }
