@@ -61,7 +61,6 @@ pipeline {
             steps {
                 sh """
                     docker run --name ${CONTAINER_NAME} \\
-                        -u ${HOST_UID}:${HOST_GID} \\
                         --env-file .env \\
                         --network ${NETWORK_NAME} \\
                         -v "\${PWD}/reports:/app/reports" \\
