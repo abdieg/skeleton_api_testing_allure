@@ -66,6 +66,7 @@ pipeline {
                         --env-file .env \\
                         --network ${NETWORK_NAME} \\
                         -v "\${PWD}/reports:/app/reports" \\
+                        -u $(id -u):$(id -g) \\
                         ${IMAGE_NAME}
                 """
             }
@@ -74,12 +75,6 @@ pipeline {
         stage('Validate if any report was generated as of now') {
             steps {
                 sh 'ls -R reports'
-            }
-        }
-
-        stage('Fix permissions') {
-            steps {
-                sh 'sudo chown -R $(id -u):$(id -g) reports || true'
             }
         }
 
