@@ -79,7 +79,6 @@ pipeline {
             steps {
                 // Clean and recreate the output folder with correct permissions
                 sh '''
-                    rm -rf reports/allure-report
                     mkdir -p reports/allure-report
                     chmod -R 777 reports/allure-report
                 '''
