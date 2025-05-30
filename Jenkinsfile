@@ -55,7 +55,12 @@ pipeline {
 
         stage('Build docker image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME} ."
+                sh '''
+                    docker build \
+                        --build-arg HOST_UID=$(id -u) \
+                        --build-arg HOST_GID=$(id -g) \
+                        -t ${IMAGE_NAME} .
+                '''
             }
         }
 
@@ -66,7 +71,6 @@ pipeline {
                         --env-file .env \\
                         --network ${NETWORK_NAME} \\
                         -v "\${PWD}/reports:/app/reports" \\
-                        -u $(id -u):$(id -g) \\
                         ${IMAGE_NAME}
                 '''
             }
@@ -74,7 +78,7 @@ pipeline {
 
         stage('Validate if any report was generated as of now') {
             steps {
-                sh 'ls -R reports'
+                sh 'ls -R reports || true'
             }
         }
 
@@ -85,7 +89,9 @@ pipeline {
                 }
             }
             steps {
-                sh "allure generate ${REPORTS_DIR}/allure-results -o ${REPORTS_DIR}/allure-report --clean"
+                // Clean old report directory to avoid AccessDeniedException
+                sh 'rm -rf reports/allure-report || true'
+                sh 'allure generate ${REPORTS_DIR}/allure-results -o ${REPORTS_DIR}/allure-report --clean'
             }
         }
 
