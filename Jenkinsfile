@@ -6,9 +6,11 @@ pipeline {
         IMAGE_NAME = 'skeleton_api_testing_image'
         CONTAINER_NAME = 'skeleton_api_testing_container'
         NETWORK_NAME = 'skeleton_api'
-        ALLURE_VERSION = '2.27.0'
-        HOST_UID = sh(script: 'id -u', returnStdout: true).trim()
-        HOST_GID = sh(script: 'id -g', returnStdout: true).trim()
+        REPORTS_DIR = 'reports'
+    }
+
+    tools {
+        allure 'allure'
     }
 
     stages {
@@ -28,10 +30,10 @@ pipeline {
                     string(credentialsId: 'QA_PORT', variable: 'QA_PORT')
                 ]) {
                     sh '''
-                        cat > .env <<EOF
-                        QA_IP=${QA_IP}
-                        QA_PORT=${QA_PORT}
-                        EOF
+                    cat > .env <<EOF
+                    QA_IP=${QA_IP}
+                    QA_PORT=${QA_PORT}
+                    EOF
                     '''
                 }
             }
@@ -75,22 +77,20 @@ pipeline {
             }
         }
 
-        stage('Generate Allure report') {
+        stage('Generate Allure Report') {
+            when {
+                expression {
+                    fileExists("${REPORTS_DIR}/allure-results")
+                }
+            }
             steps {
-                sh '''
-                    docker cp ${CONTAINER_NAME}:/app/reports allure-results
-                    allure serve allure-results
-                '''
+                sh "allure generate ${REPORTS_DIR}/allure-results -o ${REPORTS_DIR}/allure-report --clean"
             }
         }
 
-        stage('Publish Allure Report') {
+        stage('Publish Allure Report in Jenkins') {
             steps {
-                allure ([
-                    includeProperties: false,
-                    jdk: '',
-                    results: [[path: 'allure-results']]
-                ])
+                allure includeProperties: false, results: [[path: "${REPORTS_DIR}/allure-results"]]
             }
         }
 
@@ -99,7 +99,6 @@ pipeline {
     post {
         always {
             script {
-                // Cleanup container (if exists)
                 sh "docker rm -f ${CONTAINER_NAME} || true"
             }
         }
