@@ -77,25 +77,20 @@ pipeline {
 
         stage('Generate Allure report') {
             steps {
-                // Clean and recreate the output folder with correct permissions
                 sh '''
-                    mkdir -p reports/allure-report
-                    chmod -R 777 reports/allure-report
+                    docker cp ${CONTAINER_NAME}:/app/reports allure-results
+                    allure serve allure-results
                 '''
-                sh """
-                    docker run --rm \\
-                        -u \$(id -u):\$(id -g) \\
-                        -v "\${PWD}/reports/allure-results:/app/allure-results" \\
-                        -v "\${PWD}/reports/allure-report:/app/allure-report" \\
-                        allure/allure-cli:{ALLURE_VERSION} \\
-                        generate /app/allure-results -o /app/allure-report --clean
-                """
             }
         }
 
         stage('Publish Allure Report') {
             steps {
-                allure includeProperties: false, jdk: '', results: [[path: 'reports/allure-report']]
+                allure ([
+                    includeProperties: false,
+                    jdk: '',
+                    results: [[path: 'allure-results']]
+                ])
             }
         }
 
