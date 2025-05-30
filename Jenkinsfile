@@ -80,13 +80,13 @@ pipeline {
                 sh """
                     docker run --rm \\
                         -u \$(id -u):\$(id -g) \\
-                        -v "\${PWD}/reports:/app/allure-results" \\
-                        -v "\${PWD}/reports:/app/allure-report" \\
-                        ghcr.io/allure-framework/allure-docker-service/allure-cli:${ALLURE_VERSION} \\
-                        generate /app/allure-results/allure-results -o /app/allure-report/allure-report --clean
+                        -v "\${PWD}/reports/allure-results:/app/allure-results" \\
+                        -v "\${PWD}/reports/allure-report:/app/allure-report" \\
+                        allure/allure-cli:2.27.0 \\
+                        generate /app/allure-results -o /app/allure-report --clean
                 """
             }
-        }
+}
 
         stage('Publish Allure Report') {
             steps {
