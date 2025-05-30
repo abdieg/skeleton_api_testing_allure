@@ -61,14 +61,14 @@ pipeline {
 
         stage('Run tests in container') {
             steps {
-                sh """
+                sh '''
                     docker run --name ${CONTAINER_NAME} \\
                         --env-file .env \\
                         --network ${NETWORK_NAME} \\
                         -v "\${PWD}/reports:/app/reports" \\
                         -u $(id -u):$(id -g) \\
                         ${IMAGE_NAME}
-                """
+                '''
             }
         }
 
