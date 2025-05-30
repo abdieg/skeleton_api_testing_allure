@@ -77,6 +77,12 @@ pipeline {
             }
         }
 
+        stage('Fix permissions') {
+            steps {
+                sh 'sudo chown -R $(id -u):$(id -g) reports || true'
+            }
+        }
+
         stage('Generate Allure Report') {
             when {
                 expression {
