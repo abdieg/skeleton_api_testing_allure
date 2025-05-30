@@ -77,7 +77,8 @@ pipeline {
 
         stage('Fix Permissions') {
             steps {
-                sh 'chmod -R a+rw reports/allure-report || true'
+                //sh 'chmod -R a+rw reports/allure-report || true'
+                sh 'rm -rf reports/allure-report'
             }
         }
 
