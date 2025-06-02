@@ -30,4 +30,5 @@ RUN apt-get update && \
 RUN mkdir -p /app/reports
 
 # Command to run the application
-CMD ["pytest"]
+# CMD ["pytest"]
+CMD ["sh", "-c", "pytest -m ${PYTEST_MARKER:-main}"]

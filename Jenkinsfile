@@ -1,5 +1,14 @@
 pipeline {
+
     agent any
+
+    parameters {
+        string(
+        name: 'PYTEST_MARKER',
+        defaultValue: 'main',
+        description: 'Choose the marker to run: smoke, regression, main, schema, data_types, data_ranges, data_parameters, data_sanitization, authentication, permission, e2e'
+        )
+    }
 
     environment {
         PROJECT_NAME = 'skeleton_api_testing'
@@ -61,11 +70,13 @@ pipeline {
 
         stage('Run tests in container') {
             steps {
+                echo "Running tests with marker: ${params.PYTEST_MARKER}"
                 sh '''
                     docker run --name ${CONTAINER_NAME} \
                         --env-file .env \
                         --network ${NETWORK_NAME} \
                         -v "${PWD}/reports:/app/reports" \
+                        -e PYTEST_MARKER="${PYTEST_MARKER}" \
                         ${IMAGE_NAME}
                 '''
             }
