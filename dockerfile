@@ -29,6 +29,8 @@ RUN apt-get update && \
 # Create reports dir inside container
 RUN mkdir -p /app/reports
 
-# Command to run the application
+# Single command to run the application when -m and --env flags are placed in pytest.ini
 # CMD ["pytest"]
-CMD ["sh", "-c", "pytest -m ${PYTEST_MARKER:-main}"]
+
+# Command to run the application when parameters are set in jenkinsfile
+CMD ["sh", "-c", "pytest -m ${PYTEST_MARKER:-main} --env=${TEST_ENV:-qa}"]

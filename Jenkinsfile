@@ -6,7 +6,12 @@ pipeline {
         string(
         name: 'PYTEST_MARKER',
         defaultValue: 'main',
-        description: 'Choose the marker to run: smoke, regression, main, schema, data_types, data_ranges, data_parameters, data_sanitization, authentication, permission, e2e'
+        description: 'Choose the marker to run: smoke, regression, main, schema, data_types, data_ranges, data_parameters, data_sanitization, authentication, permission, e2e.'
+        )
+        string(
+        name: 'TEST_ENV',
+        defaultValue: 'qa',
+        description: 'Choose the environment to test: dev, qa, prod.'
         )
     }
 
@@ -77,6 +82,7 @@ pipeline {
                         --network ${NETWORK_NAME} \
                         -v "${PWD}/reports:/app/reports" \
                         -e PYTEST_MARKER="${PYTEST_MARKER}" \
+                        -e TEST_ENV="${TEST_ENV}" \
                         ${IMAGE_NAME}
                 '''
             }

@@ -43,3 +43,4 @@ which allure
 ls -l /usr/bin/allure
 ```
 - Do not forget to double check the Allure reports path
+- The suite and environment can be selected using Jenkins parameters
